@@ -15,7 +15,7 @@ namespace cli
 {
     class Program
     {
-        static int Main(string[] args)
+        static void Main(string[] args)
         {
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
@@ -37,7 +37,7 @@ namespace cli
                 .AddCommand(new ListCommand(emoticons,people).Create())
                 .AddCommand(new ShowCommand(emoticons, people).Create())
                 .UseDefaults().Build();
-            return command.Invoke(args);
+            command.InvokeAsync(args).Wait();
         }
     }
 }
