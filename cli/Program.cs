@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Builder;
@@ -27,7 +27,7 @@ namespace cli
                 serviceCollection.AddTransient<IRetriever<Emoticon>, ConfigEmoticonRetriever>();
                 serviceCollection.AddTransient<IRetriever<Person>, ConfigPeopleRetriever>();
                 serviceCollection.Add(new ServiceDescriptor(typeof(IConfigurationRoot), config));
-
+            
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
             var emoticons = serviceProvider.GetService<IRetriever<Emoticon>>();
@@ -35,6 +35,7 @@ namespace cli
 
             var command = new CommandLineBuilder()
                 .AddCommand(new ListCommand(emoticons,people).Create())
+                .AddCommand(new ShowCommand(emoticons, people).Create())
                 .UseDefaults().Build();
             return command.Invoke(args);
         }
