@@ -6,7 +6,10 @@ using System.CommandLine.Invocation;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Authentication.ExtendedProtection;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace cli
 {
@@ -30,7 +33,9 @@ namespace cli
             var emoticons = serviceProvider.GetService<IRetriever<Emoticon>>();
             var people = serviceProvider.GetService<IRetriever<Person>>();
 
-            var command = new CommandLineBuilder().AddCommand(new ListCommand().Create()).UseDefaults().Build();
+            var command = new CommandLineBuilder()
+                .AddCommand(new ListCommand(emoticons,people).Create())
+                .UseDefaults().Build();
             return command.Invoke(args);
         }
     }
