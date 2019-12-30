@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.CommandLine;
 using System.CommandLine.Builder;
@@ -18,16 +18,17 @@ namespace cli
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddYamlFile("appsettings.yaml", true, true)
                 .AddJsonFile("appsettings.json", true, true)
-
                 .Build();
 
-            var emoticons = config.GetSection("emoticons")
-                .GetChildren()
-                .ToDictionary(x => x.Key, x => x.Value);
+            var serviceCollection = new ServiceCollection();
+                serviceCollection.AddTransient<IRetriever<Emoticon>, ConfigEmoticonRetriever>();
+                serviceCollection.AddTransient<IRetriever<Person>, ConfigPeopleRetriever>();
+                serviceCollection.Add(new ServiceDescriptor(typeof(IConfigurationRoot), config));
 
-            var people = new List<Person>();
-            config.GetSection("people").Bind(people);
+            var serviceProvider = serviceCollection.BuildServiceProvider();
 
+            var emoticons = serviceProvider.GetService<IRetriever<Emoticon>>();
+            var people = serviceProvider.GetService<IRetriever<Person>>();
 
             var command = new CommandLineBuilder().AddCommand(new ListCommand().Create()).UseDefaults().Build();
             return command.Invoke(args);
